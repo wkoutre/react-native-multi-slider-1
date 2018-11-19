@@ -1,8 +1,40 @@
-import React from 'react';
-import { View, StyleSheet, Platform, TouchableHighlight } from 'react-native';
+import React from "react";
+import PropTypes from "prop-types";
 
-class DefaultMarker extends React.Component {
+import { View, StyleSheet, Platform, TouchableHighlight } from "react-native";
+
+const ViewPropTypes = require("react-native").ViewPropTypes || View.propTypes;
+
+export default class DefaultMarker extends React.Component {
+  static propTypes = {
+    pressed: PropTypes.bool,
+    pressedMarkerStyle: ViewPropTypes.style,
+    markerStyle: ViewPropTypes.style,
+    enabled: PropTypes.bool,
+    currentValue: PropTypes.number,
+    valuePrefix: PropTypes.string,
+    valueSuffix: PropTypes.string,
+    renderInsideMarker1: PropTypes.func,
+    renderInsideMarker2: PropTypes.func,
+    markerNumber: PropTypes.number,
+  };
+
+  renderInside = () => {
+    const {
+      markerNumber,
+      renderInsideMarker1,
+      renderInsideMarker2,
+    } = this.props;
+
+    if (markerNumber === 1) {
+      return renderInsideMarker1();
+    }
+
+    return renderInsideMarker2();
+  };
+
   render() {
+    const { renderCustomInsideMarker } = this.props;
     return (
       <TouchableHighlight>
         <View
@@ -16,11 +48,19 @@ class DefaultMarker extends React.Component {
                 ]
               : [styles.markerStyle, styles.disabled]
           }
-        />
+        >
+          {this.renderInside()}
+        </View>
       </TouchableHighlight>
     );
   }
 }
+
+DefaultMarker.defaultProps = {
+  markerNumber: 1,
+  renderInsideMarker1: () => null,
+  renderInsideMarker2: () => null,
+};
 
 const styles = StyleSheet.create({
   markerStyle: {
@@ -30,9 +70,9 @@ const styles = StyleSheet.create({
         width: 30,
         borderRadius: 30,
         borderWidth: 1,
-        borderColor: '#DDDDDD',
-        backgroundColor: '#FFFFFF',
-        shadowColor: '#000000',
+        borderColor: "#DDDDDD",
+        backgroundColor: "#FFFFFF",
+        shadowColor: "#000000",
         shadowOffset: {
           width: 0,
           height: 3,
@@ -44,7 +84,7 @@ const styles = StyleSheet.create({
         height: 12,
         width: 12,
         borderRadius: 12,
-        backgroundColor: '#0D8675',
+        backgroundColor: "#0D8675",
       },
     }),
   },
@@ -59,8 +99,6 @@ const styles = StyleSheet.create({
     }),
   },
   disabled: {
-    backgroundColor: '#d3d3d3',
+    backgroundColor: "#d3d3d3",
   },
 });
-
-export default DefaultMarker;
